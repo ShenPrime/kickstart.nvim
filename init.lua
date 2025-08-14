@@ -173,7 +173,12 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', 'H', '^')
+vim.keymap.set('v', 'H', '^')
 vim.keymap.set('n', 'L', '$')
+vim.keymap.set('n', 'L', '$')
+vim.keymap.set('n', '<Tab>', '<cmd>BufferLineCycleNext<CR>')
+vim.keymap.set('n', '<S-Tab>', '<cmd>BufferLineCyclePrev<CR>')
+vim.keymap.set('n', '<leader>x', '<cmd>BufferLinePickClose<CR>', { desc = 'Closer buffers' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -299,7 +304,6 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
-
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -353,6 +357,7 @@ require('lazy').setup({
     },
   },
 
+  { 'akinsho/bufferline.nvim', version = '*', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
   -- NOTE: Plugins can specify dependencies.
   --
   -- The dependencies are proper plugin specifications as well - anything
@@ -684,6 +689,8 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
+        html = {},
+        tailwindcss = {},
         --
         --
         elixirls = {},
@@ -772,6 +779,9 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        html = { 'prettier' },
+        css = { 'prettier' },
+
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
