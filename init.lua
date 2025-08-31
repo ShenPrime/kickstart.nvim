@@ -151,6 +151,13 @@ vim.o.splitbelow = true
 --   and `:help lua-options-guide`
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.fileformats = { 'unix', 'dos' }
+vim.opt.fileformat = 'unix'
+vim.filetype.add {
+  extension = {
+    heex = 'heex',
+  },
+}
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -689,7 +696,16 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         ts_ls = {},
-        html = {},
+        html = {
+          capabilities = {},
+          filetypes = { 'html', 'heex' },
+          init_options = { provieFormatter = false },
+        },
+
+        emmet_ls = {
+          capabilities = {},
+          filetypes = { 'html', 'css', 'heex', 'eelixir', 'elixir' },
+        },
         tailwindcss = {},
         --
         --
@@ -958,7 +974,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'elixir', 'html', 'heex' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -970,12 +986,44 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    config = function(_, opts)
+      require('nvim-treesitter.configs').setup(opts)
+      -- Fallback: treat HEEx/EEx as HTML where needed
+      pcall(vim.treesitter.language.register, 'html', 'heex')
+      pcall(vim.treesitter.language.register, 'html', 'eelixir')
+    end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+
+  {
+    'windwp/nvim-ts-autotag',
+    event = 'InsertEnter',
+    opts = {
+      filetypes = {
+        'html',
+        'xml',
+        'javascriptreact',
+        'typescriptreact',
+        'svelte',
+        'vue',
+        'astro',
+        'rescript',
+        'php',
+        'eruby',
+        'heex',
+        'eelixir',
+      },
+      aliases = { heex = 'html', eelixir = 'html' },
+      skip_tags = { 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr' },
+      enable_close = true,
+      enable_rename = true,
+      enable_close_on_slash = true,
+    },
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
